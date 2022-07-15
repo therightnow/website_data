@@ -1,0 +1,53 @@
+KENYA BACKUP REPORT AUTOMATION
+-------------------------------
+STEP1:---
+crontab on KENYA OEM
+----->>>>
+bash-4.2$ pwd
+/home/oradb/log/KENYA_BKP_RPT
+bash-4.2$ 
+bash-4.2$ 
+bash-4.2$ ls -lrt 
+total 88
+-rw-r--r--    1 oradb    dba              87 Feb 23 10:32 ken_bkp.sh
+-rw-r--r--    1 oradb    dba            1918 Feb 23 12:10 ken_bkp.sql
+-rw-r--r--    1 oradb    dba           33763 Feb 23 12:10 KENAY_BKP.html
+bash-4.2$ 
+bash-4.2$ 
+bash-4.2$ 
+
+*********************************************************************
+
+
+STEP 2:---
+crontab on self T.P
+---->>>>>
+[abhishek@oc5687071003 BKP_RPT]$ cat scp_kenya.sh
+scp -P 922 oradb@172.23.1.32:/home/oradb/log/KENYA_BKP_RPT/*.html .
+scp -P 922 KENAY_BKP.html oradb@172.27.192.62:/home/oradb/kenya_bkp_rtp/
+[abhishek@oc5687071003 BKP_RPT]$ 
+[abhishek@oc5687071003 BKP_RPT]$ 
+[abhishek@oc5687071003 BKP_RPT]$ ls -lrt 
+total 40
+-rw-rw-r--. 1 abhishek abhishek   141 Feb 23 13:22 scp_kenya.sh
+-rw-r--r--. 1 abhishek abhishek 33763 Feb 23 14:41 KENAY_BKP.html
+[abhishek@oc5687071003 BKP_RPT]$ 
+[abhishek@oc5687071003 BKP_RPT]$ pwd
+/home/abhishek/BKP_RPT
+
+**********************************************************************
+
+STEP3:---
+crontab on RWANDA OEM
+------->>>>
+[oradb@RWDCOEMDB01 kenya_bkp_rtp]$ ls -lrt 
+total 40
+-rw-r----- 1 oradb oinstall 33763 Feb 23 11:11 KENAY_BKP.html
+-rwx------ 1 oradb oinstall   631 Feb 23 11:17 send_bkp_kenya.sh
+[oradb@RWDCOEMDB01 kenya_bkp_rtp]$ 
+[oradb@RWDCOEMDB01 kenya_bkp_rtp]$ pwd
+/home/oradb/kenya_bkp_rtp
+[oradb@RWDCOEMDB01 kenya_bkp_rtp]$ 
+
+**********************************************************************
+

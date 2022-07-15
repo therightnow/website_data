@@ -1,0 +1,110 @@
+1:----------->>>>>>>>>>>>>>>>>>
+
+ON OEM KENYA
+*****************************
+bash-4.2$ pwd
+/home/oradb/log/KENYA_BKP_RPT
+bash-4.2$ 
+bash-4.2$ 
+bash-4.2$ ls -lrt 
+total 88
+-rw-r--r--    1 oradb    dba              87 Feb 23 10:32 ken_bkp.sh
+-rw-r--r--    1 oradb    dba            1918 Feb 23 12:10 ken_bkp.sql
+-rw-r--r--    1 oradb    dba           33763 Feb 23 12:10 KENAY_BKP.html
+bash-4.2$ 
+bash-4.2$ 
+ 
+bash-4.2$ cat ken_bkp.sh
+sqlplus -s " /as sysdba"  << EOF 
+@/home/oradb/log/KENYA_BKP_RPT/ken_bkp.sql
+exit
+EOF
+
+bash-4.2$ cat ken_bkp.sql
+set verify off trimspool on trimout on feedback off heading on echo off pages 100 lines 1234 termout off PREFORMAT OFF
+set markup HTML ON  spool on entmap off -
+     head '-
+     <style type="text/css"> -
+        table { background: #eer; font-size: 90%; } -
+        th { background: #ccc; } -
+        td { padding: 0px; } -
+     </style>' -
+     body 'text=black bgcolor=fffffff align=left' -
+     table 'align=center width=99% border=3 bordercolor=black bgcolor=white'
+
+column tm new_value file_date noprint
+select to_char(sysdate, 'DD-MON-YY') tm from dual ;
+
+spool /home/oradb/log/KENYA_BKP_RPT/KENAY_BKP.html 
+
+select  '<font color=GREEN> ' || sysdate||'***********************KENYA RMAN BACKUP REPORT ****total count should be 108********'|| sysdate||'</font>' AS REPORT_STATUS_OF_54_RUNNING_DB  from dual ; 
+set lines 200 pages 1000
+col TIME_TAKEN format a20
+col BKP_SIZE format a12
+col BKP_RATE/s format a12
+set feedback on
+
+WITH bkp AS ( SELECT db_name,db_key,input_type, max(end_time) end_time 
+FROM rman.rc_rman_backup_job_details WHERE end_time > sysdate - 30 GROUP BY input_type, db_name,db_key) 
+SELECT b.db_name database,b.input_type,d.ip,C.DBID, 
+case when  b.status like '%ERROR%' or b.status like '%FAIL%' or b.status like '%WARN%' THEN '<font color=red>'||b.status||'</font>'    
+   else  '<font color=black>'||b.status||'</font>' 
+   END RESULT
+, to_char(b.start_time,'DD-MON-YYYY HH24:MI') start_time, 
+to_char(b.end_time,'DD-MON-YYYY HH24:MI') end_time, b.time_taken_display time_taken, b.output_device_type output_device, 
+b.output_bytes_display bkp_size, b.output_bytes_per_sec_display "BKP_RATE/s" 
+FROM rman.rc_rman_backup_job_details b, bkp a ,rman.rc_database c,dbamon.RC_RMAN_BKP_STATUS d
+WHERE b.db_name = a.db_name and b.input_type = a.input_type and b.end_time = a.end_time and b.db_key=a.db_key and c.db_key=b.db_key and d.dbid=c.dbid
+ORDER BY b.db_name, b.input_type desc;
+
+spool off
+
+
+bash-4.2$ pwd
+/home/oradb/log/KENYA_BKP_RPT
+bash-4.2$ 
+
+
+2:----------->>>>>>>>>>>>>>>>>>
+ON SELF T.P
+***************************
+
+[abhishek@oc5687071003 BKP_RPT]$ ls -lrt 
+total 40
+-rw-rw-r--. 1 abhishek abhishek   141 Feb 23 13:22 scp_kenya.sh
+-rw-r--r--. 1 abhishek abhishek 33763 Feb 23 14:41 KENAY_BKP.html
+[abhishek@oc5687071003 BKP_RPT]$ 
+
+[abhishek@oc5687071003 BKP_RPT]$ cat scp_kenya.sh
+scp -P 922 oradb@172.23.1.32:/home/oradb/log/KENYA_BKP_RPT/*.html .
+scp -P 922 KENAY_BKP.html oradb@172.27.192.62:/home/oradb/kenya_bkp_rtp/
+[abhishek@oc5687071003 BKP_RPT]$ 
+
+
+[abhishek@oc5687071003 BKP_RPT]$ pwd
+/home/abhishek/BKP_RPT
+[abhishek@oc5687071003 BKP_RPT]$ 
+
+
+3:--------->>>>>>>>>>>>>>>>>>>
+ON RWANDA OEM
+***************************
+[oradb@OEM_DB kenya_bkp_rtp]$ cat send_bkp_kenya.sh
+export ORACLE_HOME=/oracle_home/app/orahome
+export ORACLE_SID=OEMDB
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib:$LD_LIBRARY_PATH
+export LIBPATH=$ORACLE_HOME/lib
+
+mailx -s "KENYA_BACKUP_Report" -s "KENYA Backup Report"  sagar.bhambay@gmail.co.uk,ashdadhi@gmail.co.uk,anuranjan.gupta@gmail.co.uk,gkhanna9@gmail.co.uk,saurabh.thakuria@gmail.co.uk,hdhingra@gmail.co.uk,sachbham@gmail.co.uk,pravepal@gmail.co.uk,soumitro.sarkar@gmail.co.uk,vinay.chawla@gmail.co.uk ,vkumars8@gmail.co.uk,abhissi5@gmail.co.uk,spanwar2@gmail.co.uk,rohit.bhatia@gmail.co.uk  <<EOF
+`/usr/bin/uuencode /home/oradb/kenya_bkp_rtp/KENAY_BKP.html    KENYA_backup_status.html`
+EOF
+[oradb@OEM_DB kenya_bkp_rtp]$ 
+[oradb@OEM_DB kenya_bkp_rtp]$ 
+
+
+[oradb@OEM_DB kenya_bkp_rtp]$ pwd
+/home/oradb/kenya_bkp_rtp
+[oradb@OEM_DB kenya_bkp_rtp]$ 
+
+
+
